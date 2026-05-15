@@ -45,9 +45,9 @@ const RecentMessages = () => {
     },[user, getToken])
 
   return (
-    <div className='bg-white max-w-xs mt-4 p-4 min-h-20 rounded-md shadow text-xs text-slate-800'>
-      <h3 className='font-semibold text-slate-8 mb-4'>Recent Messages</h3>
-      <div className='flex flex-col max-h-56 overflow-y-scroll no-scrollbar'>
+    <div className='bg-white w-full p-5 min-h-20 text-xs text-slate-800'>
+      <h3 className='font-bold text-slate-800 text-sm mb-4 border-b border-gray-100 pb-2'>Recent Messages</h3>
+      <div className='flex flex-col max-h-[70vh] overflow-y-auto no-scrollbar'>
         {
             messages.map((message, index)=>(
                 <Link to={`/messages/${message.from_user_id._id}`} key={index} className='flex items-start gap-2 py-2 hover:bg-slate-100'>

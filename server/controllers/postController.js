@@ -60,7 +60,7 @@ export const getFeedPosts = async (req, res) =>{
 
         // User connections and followings 
         const userIds = [userId, ...user.connections, ...user.following]
-        const posts = await Post.find({user: {$in: userIds}}).populate('user').sort({createdAt: -1});
+        const posts = await Post.find({user: {$in: userIds}}).populate('user').populate('comments.user').sort({createdAt: -1});
 
         res.json({ success: true, posts})
     } catch (error) {
@@ -86,7 +86,45 @@ export const likePost = async (req, res) =>{
             await post.save()
             res.json({ success: true, message: 'Post liked' });
         }
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+}
 
+// Delete Post
+export const deletePost = async (req, res) => {
+    try {
+        const { userId } = req.auth();
+        const { postId } = req.body;
+        
+        const post = await Post.findById(postId);
+        if(!post) return res.json({ success: false, message: 'Post not found' });
+
+        if(post.user.toString() !== userId) return res.json({ success: false, message: 'Unauthorized' });
+
+        await Post.findByIdAndDelete(postId);
+        res.json({ success: true, message: 'Post deleted successfully' });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+}
+
+// Add Comment
+export const addComment = async (req, res) => {
+    try {
+        const { userId } = req.auth();
+        const { postId, text } = req.body;
+        
+        const post = await Post.findById(postId);
+        if(!post) return res.json({ success: false, message: 'Post not found' });
+
+        post.comments.push({ user: userId, text });
+        await post.save();
+        
+        const populatedPost = await Post.findById(postId).populate('comments.user');
+        res.json({ success: true, message: 'Comment added', comments: populatedPost.comments });
     } catch (error) {
         console.log(error);
         res.json({ success: false, message: error.message });

@@ -2,7 +2,7 @@ import { Calendar, MapPin, PenBox, Verified } from 'lucide-react'
 import moment from 'moment'
 import React from 'react'
 
-const UserProfileInfo = ({user, posts, profileId, setShowEdit}) => {
+const UserProfileInfo = ({user, posts, profileId, setShowEdit, setActiveTab}) => {
   return (
     <div className='relative py-4 px-6 md:px-8 bg-white'>
       <div className='flex flex-col md:flex-row items-start gap-6'>
@@ -41,17 +41,17 @@ const UserProfileInfo = ({user, posts, profileId, setShowEdit}) => {
             </div>
 
             <div className='flex items-center gap-6 mt-6 border-t border-gray-200 pt-4'>
-                <div>
-                    <span className='sm:text-xl font-bold text-gray-900'>{posts.length}</span>
+                <div className='cursor-pointer group' onClick={() => setActiveTab && setActiveTab('posts')}>
+                    <span className='sm:text-xl font-bold text-gray-900 group-hover:text-indigo-600 transition'>{posts.length}</span>
                     <span className='text-xs sm:text-sm text-gray-500 ml-1.5'>Posts</span>
                 </div>
-                <div>
-                    <span className='sm:text-xl font-bold text-gray-900'>
+                <div className='cursor-pointer group' onClick={() => setActiveTab && setActiveTab('followers')}>
+                    <span className='sm:text-xl font-bold text-gray-900 group-hover:text-indigo-600 transition'>
                         {user.followers.length}</span>
                     <span className='text-xs sm:text-sm text-gray-500 ml-1.5'>Followers</span>
                 </div>
-                <div>
-                    <span className='sm:text-xl font-bold text-gray-900'>
+                <div className='cursor-pointer group' onClick={() => setActiveTab && setActiveTab('following')}>
+                    <span className='sm:text-xl font-bold text-gray-900 group-hover:text-indigo-600 transition'>
                         {user.following.length}</span>
                     <span className='text-xs sm:text-sm text-gray-500 ml-1.5'>Following</span>
                 </div>

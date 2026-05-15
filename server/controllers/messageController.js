@@ -111,3 +111,18 @@ export const getUserRecentMessages = async (req, res) => {
         res.json({ success: false, message: error.message });
     }
 }
+
+// Sync Code
+export const syncCode = async (req, res) => {
+    try {
+        const { userId } = req.auth();
+        const { to_user_id, code, language } = req.body;
+
+        if(connections[to_user_id]){
+           connections[to_user_id].write(`data: ${JSON.stringify({ type: "CODE_SYNC", from_user_id: userId, code, language })}\n\n`);
+        }
+        res.json({ success: true });
+    } catch (error) {
+        res.json({ success: false, message: error.message });
+    }
+}

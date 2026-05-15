@@ -1,9 +1,15 @@
-import { BadgeCheck, X } from 'lucide-react'
+import { BadgeCheck, X, Trash2, Eye } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { useAuth } from '@clerk/clerk-react'
+import api from '../api/axios'
+import toast from 'react-hot-toast'
 
 const StoryViewer = ({viewStory, setViewStory}) => {
 
     const [progress, setProgress] = useState(0)
+    const currentUser = useSelector((state) => state.user.value)
+    const { getToken } = useAuth()
 
     useEffect(()=>{
         let timer, progressInterval;
@@ -26,15 +32,42 @@ const StoryViewer = ({viewStory, setViewStory}) => {
              }, duration)
         }
 
+        const markView = async () => {
+            if(viewStory && currentUser && (viewStory.user?._id !== currentUser._id && viewStory.user !== currentUser._id)) {
+                try {
+                    const token = await getToken();
+                    await api.post('/api/story/view', { storyId: viewStory._id }, { headers: { Authorization: `Bearer ${token}` } });
+                } catch(error) {
+                    console.error("Failed to mark story as viewed", error);
+                }
+            }
+        }
+        markView();
+
         return ()=>{
             clearTimeout(timer);
             clearInterval(progressInterval)
         }
 
-    }, [viewStory, setViewStory])
+    }, [viewStory, currentUser, getToken, setViewStory])
 
     const handleClose = ()=>{
         setViewStory(null)
+    }
+
+    const handleDelete = async () => {
+        try {
+            const token = await getToken()
+            const { data } = await api.post('/api/story/delete', { storyId: viewStory._id }, { headers: { Authorization: `Bearer ${token}` } })
+            if(data.success){
+                toast.success(data.message)
+                setViewStory(null)
+            } else {
+                toast.error(data.message)
+            }
+        } catch(error) {
+            toast.error(error.message)
+        }
     }
 
     if(!viewStory) return null
@@ -79,10 +112,41 @@ const StoryViewer = ({viewStory, setViewStory}) => {
         </div>
       </div>
 
-       {/* Close Button */}
-       <button onClick={handleClose} className='absolute top-4 right-4 text-white text-3xl font-bold focus:outline-none'>
-        <X className='w-8 h-8 hover:scale-110 transition cursor-pointer'/>
-       </button>
+       {/* Action Buttons */}
+       <div className='absolute top-4 right-4 flex items-center gap-4 z-50'>
+           {currentUser && viewStory.user && (currentUser._id === viewStory.user._id || currentUser._id === viewStory.user) && (
+               <>
+               <div className='group relative flex items-center gap-2 text-white bg-black/50 px-3 py-1.5 rounded-full cursor-pointer hover:bg-black/80 transition'>
+                   <Eye size={18} />
+                   <span className='text-sm font-medium'>{viewStory.views_count?.length || 0}</span>
+                   {/* Dropdown for viewers */}
+                   <div className='absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 overflow-hidden'>
+                       <div className='p-2 bg-slate-50 border-b border-slate-100'>
+                           <p className='text-xs font-semibold text-slate-700'>Viewed by</p>
+                       </div>
+                       <div className='max-h-48 overflow-y-auto'>
+                           {viewStory.views_count && viewStory.views_count.length > 0 ? (
+                               viewStory.views_count.map((viewer, idx) => (
+                                   <div key={idx} className='flex items-center gap-2 p-2 hover:bg-slate-50 transition'>
+                                       <img src={viewer.profile_picture || viewer} className='w-6 h-6 rounded-full bg-slate-200 object-cover' alt="" />
+                                       <span className='text-sm text-slate-700 truncate'>{viewer.full_name || 'User'}</span>
+                                   </div>
+                               ))
+                           ) : (
+                               <div className='p-3 text-center text-xs text-slate-500'>No views yet</div>
+                           )}
+                       </div>
+                   </div>
+               </div>
+               <button onClick={handleDelete} className='text-white focus:outline-none bg-black/50 p-2 rounded-full hover:bg-black/80 transition cursor-pointer'>
+                   <Trash2 className='w-6 h-6 hover:text-red-500'/>
+               </button>
+               </>
+           )}
+           <button onClick={handleClose} className='text-white focus:outline-none bg-black/50 p-2 rounded-full hover:bg-black/80 transition cursor-pointer'>
+               <X className='w-6 h-6 hover:scale-110'/>
+           </button>
+       </div>
 
        {/* Content Wrapper */}
        <div className='max-w-[90vw] max-h-[90vh] flex items-center justify-center'>

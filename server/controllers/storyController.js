@@ -59,11 +59,50 @@ export const getStories = async (req, res) =>{
 
         const stories = await Story.find({
             user: {$in: userIds}
-        }).populate('user').sort({ createdAt: -1 });
+        }).populate('user').populate('views_count').sort({ createdAt: -1 });
 
         res.json({ success: true, stories }); 
     } catch (error) {
        console.log(error);
        res.json({ success: false, message: error.message }); 
+    }
+}
+
+// Delete User Story
+export const deleteStory = async (req, res) =>{
+    try {
+        const { userId } = req.auth();
+        const { storyId } = req.body;
+        
+        const story = await Story.findById(storyId);
+        if (!story) return res.json({ success: false, message: 'Story not found' });
+        
+        if (story.user.toString() !== userId) return res.json({ success: false, message: 'Unauthorized' });
+
+        await Story.findByIdAndDelete(storyId);
+        res.json({ success: true, message: 'Story deleted' });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+}
+
+// View Story
+export const viewStory = async (req, res) => {
+    try {
+        const { userId } = req.auth();
+        const { storyId } = req.body;
+        
+        const story = await Story.findById(storyId);
+        if(!story) return res.json({ success: false, message: 'Story not found' });
+
+        if(!story.views_count.includes(userId) && story.user.toString() !== userId) {
+            story.views_count.push(userId);
+            await story.save();
+        }
+        res.json({ success: true });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
     }
 }

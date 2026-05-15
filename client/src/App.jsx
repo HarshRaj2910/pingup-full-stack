@@ -8,6 +8,8 @@ import Connections from './pages/Connections'
 import Discover from './pages/Discover'
 import Profile from './pages/Profile'
 import CreatePost from './pages/CreatePost'
+import CodeSharePage from './pages/CodeSharePage'
+import LiveCollab from './pages/LiveCollab'
 import {useUser, useAuth} from '@clerk/clerk-react'
 import Layout from './pages/Layout'
 import toast, {Toaster} from 'react-hot-toast'
@@ -47,14 +49,28 @@ const App = () => {
       const eventSource = new EventSource(import.meta.env.VITE_BASEURL + '/api/message/' + user.id);
 
       eventSource.onmessage = (event)=>{
-        const message = JSON.parse(event.data)
+        try {
+          const message = JSON.parse(event.data)
 
-        if(pathnameRef.current === ('/messages/' + message.from_user_id._id)){
-          dispatch(addMessage(message))
-        }else{
-          toast.custom((t)=>(
-            <Notification t={t} message={message}/>
-          ), {position: "bottom-right"})
+          if (message.type === "CODE_SYNC") {
+             const customEvent = new CustomEvent('code_sync', { detail: message });
+             window.dispatchEvent(customEvent);
+             return;
+          }
+
+          // Play sound
+          const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
+          audio.play().catch((err) => console.log('Audio error:', err));
+
+          if(pathnameRef.current === ('/messages/' + (message.from_user_id?._id || message.from_user_id))){
+            dispatch(addMessage(message))
+          }else{
+            toast.custom((t)=>(
+              <Notification t={t} message={message}/>
+            ), {position: "bottom-right", duration: 5000})
+          }
+        } catch (error) {
+          console.error("Error parsing SSE data", error)
         }
       }
       return ()=>{
@@ -76,6 +92,8 @@ const App = () => {
           <Route path='profile' element={<Profile/>}/>
           <Route path='profile/:profileId' element={<Profile/>}/>
           <Route path='create-post' element={<CreatePost/>}/>
+          <Route path='code-share' element={<CodeSharePage/>}/>
+          <Route path='live-collab/:partnerId' element={<LiveCollab/>}/>
         </Route>
       </Routes>
     </>

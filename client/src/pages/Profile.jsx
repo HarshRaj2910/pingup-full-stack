@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { PenBox } from 'lucide-react'
 
 import { useEffect } from 'react'
 import Loading from '../components/Loading'
@@ -54,18 +55,24 @@ const Profile = () => {
         {/* Profile Card */}
         <div className='bg-white rounded-2xl shadow overflow-hidden'>
           {/* Cover Photo */}
-          <div className='h-40 md:h-56 bg-gradient-to-r from-indigo-200 via-purple-200 to-pink-200'>
+          <div className='h-40 md:h-56 bg-gradient-to-r from-indigo-200 via-purple-200 to-pink-200 relative group'>
             {user.cover_photo && <img src={user.cover_photo} alt='' className='w-full h-full object-cover'/>}
+            {!profileId && (
+                <button onClick={()=> setShowEdit(true)} className='absolute bottom-4 right-4 bg-black/50 text-white p-2 rounded-full hover:bg-black/80 transition cursor-pointer flex items-center gap-2 text-sm'>
+                    <PenBox className="w-4 h-4"/>
+                    <span className='hidden sm:block'>Edit Cover</span>
+                </button>
+            )}
           </div>
           {/* User Info */}
-          <UserProfileInfo user={user} posts={posts} profileId={profileId} setShowEdit={setShowEdit}/>
+          <UserProfileInfo user={user} posts={posts} profileId={profileId} setShowEdit={setShowEdit} setActiveTab={setActiveTab}/>
         </div>
 
         {/* Tabs */}
         <div className='mt-6'>
-          <div className='bg-white rounded-xl shadow p-1 flex max-w-md mx-auto'>
-            {["posts", "media", "likes"].map((tab)=>(
-              <button onClick={()=> setActiveTab(tab)} key={tab} className={`flex-1 px-4 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${activeTab === tab ? "bg-indigo-600 text-white" : "text-gray-600 hover:text-gray-900"}`}>
+          <div className='bg-white rounded-xl shadow p-1 flex max-w-2xl mx-auto overflow-x-auto'>
+            {["posts", "media", "likes", "followers", "following"].map((tab)=>(
+              <button onClick={()=> setActiveTab(tab)} key={tab} className={`flex-1 min-w-[80px] px-4 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${activeTab === tab ? "bg-indigo-600 text-white" : "text-gray-600 hover:text-gray-900"}`}>
                   {tab.charAt(0).toUpperCase() + tab.slice(1)}
               </button>
             ))}
@@ -93,6 +100,52 @@ const Profile = () => {
                 ))
               }
             </div>
+          )}
+
+          {/* Followers */}
+          {activeTab === 'followers' && (
+              <div className='mt-6 grid grid-cols-1 md:grid-cols-2 gap-4'>
+                  {user.followers?.length > 0 ? (
+                      user.followers.map(follower => (
+                          <div key={follower._id} className='bg-white p-4 rounded-xl shadow flex items-center gap-4'>
+                              <Link to={`/profile/${follower._id}`}>
+                                  <img src={follower.profile_picture} alt="" className='w-12 h-12 rounded-full object-cover'/>
+                              </Link>
+                              <div>
+                                  <Link to={`/profile/${follower._id}`} className='font-bold text-gray-900 hover:underline'>
+                                      {follower.full_name}
+                                  </Link>
+                                  <p className='text-sm text-gray-500'>@{follower.username}</p>
+                              </div>
+                          </div>
+                      ))
+                  ) : (
+                      <p className='text-gray-500 text-center col-span-full'>No followers yet.</p>
+                  )}
+              </div>
+          )}
+
+          {/* Following */}
+          {activeTab === 'following' && (
+              <div className='mt-6 grid grid-cols-1 md:grid-cols-2 gap-4'>
+                  {user.following?.length > 0 ? (
+                      user.following.map(following => (
+                          <div key={following._id} className='bg-white p-4 rounded-xl shadow flex items-center gap-4'>
+                              <Link to={`/profile/${following._id}`}>
+                                  <img src={following.profile_picture} alt="" className='w-12 h-12 rounded-full object-cover'/>
+                              </Link>
+                              <div>
+                                  <Link to={`/profile/${following._id}`} className='font-bold text-gray-900 hover:underline'>
+                                      {following.full_name}
+                                  </Link>
+                                  <p className='text-sm text-gray-500'>@{following.username}</p>
+                              </div>
+                          </div>
+                      ))
+                  ) : (
+                      <p className='text-gray-500 text-center col-span-full'>Not following anyone yet.</p>
+                  )}
+              </div>
           )}
         
         </div>

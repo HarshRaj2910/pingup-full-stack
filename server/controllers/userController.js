@@ -298,11 +298,11 @@ export const acceptConnectionRequest = async (req, res) => {
 export const getUserProfiles = async (req, res) =>{
     try {
         const { profileId } = req.body;
-        const profile = await User.findById(profileId)
+        const profile = await User.findById(profileId).populate('followers following')
         if(!profile){
             return res.json({ success: false, message: "Profile not found" });
         }
-        const posts = await Post.find({user: profileId}).populate('user')
+        const posts = await Post.find({user: profileId}).populate('user').populate('comments.user').sort({createdAt: -1})
 
         res.json({success: true, profile, posts})
     } catch (error) {

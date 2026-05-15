@@ -13,10 +13,10 @@ const Sidebar = ({sidebarOpen, setSidebarOpen}) => {
     const {signOut} = useClerk()
 
   return (
-    <div className={`w-60 xl:w-72 bg-white border-r border-gray-200 flex flex-col justify-between items-center max-sm:absolute top-0 bottom-0 z-20 ${sidebarOpen ? 'translate-x-0' : 'max-sm:-translate-x-full'} transition-all duration-300 ease-in-out`}>
+    <div className={`w-60 xl:w-72 bg-gradient-to-b from-slate-50 to-white shadow-2xl border-r border-indigo-50/50 flex flex-col justify-between items-center max-sm:absolute top-0 bottom-0 z-20 ${sidebarOpen ? 'translate-x-0' : 'max-sm:-translate-x-full'} transition-all duration-300 ease-in-out`}>
       <div className='w-full'>
-            <img onClick={()=> navigate('/')} src={assets.logo} className='w-26 ml-7 my-2 cursor-pointer' alt="" />
-            <hr className='border-gray-300 mb-8'/>
+            <img onClick={()=> navigate('/')} src={assets.logo} className='w-32 ml-7 my-6 cursor-pointer hover:opacity-80 transition' alt="" />
+            <hr className='border-indigo-100 mb-6 mx-4'/>
 
             <MenuItems setSidebarOpen={setSidebarOpen}/>
 
