@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import moment from 'moment'
 
-import { ImageIcon, SendHorizonal, Sun, Moon, Code2 } from 'lucide-react'
+import { ImageIcon, FileIcon, SendHorizonal, Sun, Moon, Code2 } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, Link } from 'react-router-dom'
 import { useAuth } from '@clerk/clerk-react'
@@ -17,7 +17,7 @@ const ChatBox = () => {
   const dispatch = useDispatch()
 
   const [text, setText] = useState('')
-  const [image, setImage] = useState(null)
+  const [attachment, setAttachment] = useState(null)
   const [user, setUser] = useState(null)
   const [isDarkMode, setIsDarkMode] = useState(false)
   const messagesEndRef = useRef(null)
@@ -32,14 +32,14 @@ const ChatBox = () => {
       const formData = new FormData();
       formData.append('to_user_id', userId)
       formData.append('text', text);
-      image && formData.append('image', image);
+      attachment && formData.append('attachment', attachment);
 
       const { data } = await api.post('/api/message/send', formData, {
         headers: { Authorization: `Bearer ${token}` }
       })
       if (data.success) {
         setText('')
-        setImage(null)
+        setAttachment(null)
         dispatch(addMessage(data.message))
       }else{
         throw new Error(data.message)
@@ -128,6 +128,12 @@ const ChatBox = () => {
                   {
                   message.message_type === 'image' && <img src={message.media_url} className={`w-full max-w-sm mb-1 object-cover ${message.text ? 'rounded-lg' : 'rounded-2xl'}`} alt="" />
                   }
+                  {
+                  message.message_type === 'pdf' && <a href={message.media_url} target="_blank" rel="noreferrer" className={`flex items-center gap-2 underline mb-1 font-bold ${message.to_user_id === user._id ? 'text-white' : 'text-indigo-600'}`}><FileIcon size={16}/> View PDF</a>
+                  }
+                  {
+                  message.message_type === 'file' && <a href={message.media_url} target="_blank" rel="noreferrer" className={`flex items-center gap-2 underline mb-1 font-bold ${message.to_user_id === user._id ? 'text-white' : 'text-indigo-600'}`}><FileIcon size={16}/> View File</a>
+                  }
                   {message.text && (
                       message.text.includes('[Join Live Collab]') ? 
                       <div className='leading-relaxed'>
@@ -152,13 +158,13 @@ const ChatBox = () => {
             <input type="text" className={`flex-1 outline-none bg-transparent ${isDarkMode ? 'text-white placeholder-slate-400' : 'text-slate-700'}`} placeholder='Type a message...'
             onKeyDown={e=>e.key === 'Enter' && sendMessage()} onChange={(e)=>setText(e.target.value)} value={text} />
 
-            <label htmlFor="image">
+            <label htmlFor="attachment">
               {
-                image 
-                ? <img src={URL.createObjectURL(image)} alt="" className='h-8 rounded'/> 
+                attachment 
+                ? (attachment.type.startsWith('image/') ? <img src={URL.createObjectURL(attachment)} alt="" className='h-8 rounded'/> : <FileIcon className='size-7 text-indigo-500'/>)
                 : <ImageIcon className='size-7 text-gray-400 cursor-pointer'/>
               }
-              <input type="file" id='image' accept="image/*" hidden onChange={(e)=>setImage(e.target.files[0])}/>
+              <input type="file" id='attachment' accept="image/*,application/pdf" hidden onChange={(e)=>setAttachment(e.target.files[0])}/>
             </label>
 
             <button onClick={sendMessage} className='bg-gradient-to-br from-indigo-500 to-purple-600 hover:from-indigo-700 hover:to-purple-800 active:scale-95 cursor-pointer text-white p-2 rounded-full'>

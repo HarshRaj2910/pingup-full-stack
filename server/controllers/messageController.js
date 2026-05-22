@@ -35,24 +35,25 @@ export const sendMessage = async (req, res) => {
     try {
         const { userId } = req.auth();
         const { to_user_id, text } = req.body;
-        const image = req.file;
+        const file = req.file;
 
         let media_url = '';
-        let message_type = image ? 'image' : 'text';
+        let message_type = 'text';
 
-        if(message_type === 'image'){
-            const fileBuffer =  fs.readFileSync(image.path);
+        if(file){
+            message_type = file.mimetype === 'application/pdf' ? 'pdf' : (file.mimetype.startsWith('image/') ? 'image' : 'file');
+            const fileBuffer =  fs.readFileSync(file.path);
             const response = await imagekit.upload({
                 file: fileBuffer,
-                fileName: image.originalname,
+                fileName: file.originalname,
             });
             media_url = imagekit.url({
                 path: response.filePath,
-                transformation: [
+                transformation: message_type === 'image' ? [
                     {quality: 'auto'},
                     {format: 'webp'},
                     {width: '1280'}
-                ]
+                ] : []
             })
         }
 

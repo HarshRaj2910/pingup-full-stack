@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 
 import { Search } from 'lucide-react'
 import UserCard from '../components/UserCard'
+import PostCard from '../components/PostCard'
 import Loading from '../components/Loading'
 import api from '../api/axios'
 import { useAuth } from '@clerk/clerk-react'
@@ -14,6 +15,7 @@ const Discover = () => {
   const dispatch = useDispatch()
   const [input, setInput] = useState('')
   const [users, setUsers] = useState([])
+  const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(false)
   const { getToken } = useAuth()
 
@@ -35,9 +37,26 @@ const Discover = () => {
     }
   }
 
+  const fetchDiscoverPosts = async () => {
+      try {
+        setLoading(true)
+        const { data } = await api.get('/api/post/discover', {
+          headers: { Authorization: `Bearer ${await getToken()}` }
+        })
+        if (data.success) {
+           setPosts(data.posts)
+        }
+        setLoading(false)
+      } catch (error) {
+        console.log(error)
+        setLoading(false)
+      }
+  }
+
   useEffect(()=>{
     getToken().then((token)=>{
       dispatch(fetchUser(token))
+      fetchDiscoverPosts()
     })
   },[getToken, dispatch])
 
@@ -61,10 +80,24 @@ const Discover = () => {
         </div>
       </div>
 
-      <div className='flex flex-wrap gap-6'>
-        {users.map((user)=>(
-          <UserCard user={user} key={user._id}/>
-        ))}
+      <div className='flex flex-col gap-6'>
+        {users.length > 0 || input ? (
+          <div className='flex flex-wrap gap-6'>
+            {users.map((user)=>(
+              <UserCard user={user} key={user._id}/>
+            ))}
+            {users.length === 0 && !loading && <p className='text-slate-500'>No users found.</p>}
+          </div>
+        ) : (
+          <div className='flex flex-col items-center gap-6'>
+            <h2 className='text-xl font-bold w-full text-slate-700'>Discover Posts</h2>
+            <div className='w-full max-w-xl mx-auto flex flex-col gap-6'>
+              {posts.map((post)=>(
+                <PostCard post={post} key={post._id}/>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {

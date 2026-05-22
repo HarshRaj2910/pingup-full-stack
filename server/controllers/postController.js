@@ -24,7 +24,7 @@ export const addPost = async (req, res) => {
 
                         const url = imagekit.url({
                             path: response.filePath,
-                            transformation: [
+                            transformation: image.mimetype.startsWith('video/') ? [] : [
                                 {quality: 'auto'},
                                 { format: 'webp' },
                                 { width: '1280' }
@@ -62,6 +62,17 @@ export const getFeedPosts = async (req, res) =>{
         const userIds = [userId, ...user.connections, ...user.following]
         const posts = await Post.find({user: {$in: userIds}}).populate('user').populate('comments.user').sort({createdAt: -1});
 
+        res.json({ success: true, posts})
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+}
+
+// Get Discover Posts
+export const getDiscoverPosts = async (req, res) =>{
+    try {
+        const posts = await Post.find().populate('user').populate('comments.user').sort({createdAt: -1}).limit(50);
         res.json({ success: true, posts})
     } catch (error) {
         console.log(error);

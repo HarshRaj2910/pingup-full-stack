@@ -1,9 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { assets } from '../assets/assets'
 import { Star, ShieldCheck, Zap, Activity, Users, ArrowRight, Code2 } from 'lucide-react'
-import { SignIn } from '@clerk/clerk-react'
+import { SignIn, SignUp } from '@clerk/clerk-react'
 
 const Login = () => {
+  const [isSignIn, setIsSignIn] = useState(true)
+
   return (
     <div className='min-h-screen bg-slate-50 font-sans selection:bg-indigo-500 selection:text-white'>
       
@@ -149,6 +151,57 @@ const Login = () => {
           </div>
       </section>
 
+      {/* Testimonials Section */}
+      <section id="testimonials" className='py-24 bg-slate-50 relative'>
+          <div className='max-w-7xl mx-auto px-6 lg:px-20'>
+              <div className='text-center max-w-3xl mx-auto mb-16'>
+                  <h2 className='text-3xl lg:text-4xl font-bold text-slate-900 mb-4'>What developers are saying</h2>
+                  <p className='text-lg text-slate-600'>Join thousands of developers who are already using PingUp to build and ship faster.</p>
+              </div>
+              <div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
+                  <div className='bg-white p-8 rounded-2xl shadow-sm border border-slate-100'>
+                      <div className='flex text-amber-400 mb-4'>
+                          {Array(5).fill(0).map((_, i) => <Star key={i} className='w-4 h-4 fill-current'/>)}
+                      </div>
+                      <p className='text-slate-600 mb-6 italic'>"PingUp completely changed how our team collaborates. The live code syncing is pure magic!"</p>
+                      <div className='flex items-center gap-3'>
+                          <img src="https://i.pravatar.cc/150?img=11" className='w-10 h-10 rounded-full' alt=""/>
+                          <div>
+                              <p className='font-bold text-sm text-slate-900'>Alex Johnson</p>
+                              <p className='text-xs text-slate-500'>Full-Stack Developer</p>
+                          </div>
+                      </div>
+                  </div>
+                  <div className='bg-white p-8 rounded-2xl shadow-sm border border-slate-100'>
+                      <div className='flex text-amber-400 mb-4'>
+                          {Array(5).fill(0).map((_, i) => <Star key={i} className='w-4 h-4 fill-current'/>)}
+                      </div>
+                      <p className='text-slate-600 mb-6 italic'>"The best platform for indie hackers. Uptime monitoring integrated right where I need it."</p>
+                      <div className='flex items-center gap-3'>
+                          <img src="https://i.pravatar.cc/150?img=12" className='w-10 h-10 rounded-full' alt=""/>
+                          <div>
+                              <p className='font-bold text-sm text-slate-900'>Sarah Williams</p>
+                              <p className='text-xs text-slate-500'>Indie Maker</p>
+                          </div>
+                      </div>
+                  </div>
+                  <div className='bg-white p-8 rounded-2xl shadow-sm border border-slate-100'>
+                      <div className='flex text-amber-400 mb-4'>
+                          {Array(5).fill(0).map((_, i) => <Star key={i} className='w-4 h-4 fill-current'/>)}
+                      </div>
+                      <p className='text-slate-600 mb-6 italic'>"I love sharing my short coding videos here. The community is super supportive and fast."</p>
+                      <div className='flex items-center gap-3'>
+                          <img src="https://i.pravatar.cc/150?img=15" className='w-10 h-10 rounded-full' alt=""/>
+                          <div>
+                              <p className='font-bold text-sm text-slate-900'>David Chen</p>
+                              <p className='text-xs text-slate-500'>Software Engineer</p>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </section>
+
       {/* Login / CTA Section */}
       <section id="login" className='py-24 bg-slate-900 relative overflow-hidden'>
           <div className='absolute inset-0 bg-indigo-900/20 blur-3xl rounded-full w-[800px] h-[800px] -top-96 -right-20 pointer-events-none'></div>
@@ -166,7 +219,16 @@ const Login = () => {
 
               <div className='flex-1 w-full max-w-md bg-white p-8 rounded-3xl shadow-2xl relative'>
                   <div className='absolute -top-6 -left-6 bg-indigo-600 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg transform -rotate-12'>Free Forever for Students</div>
-                  <SignIn />
+                  
+                  <div className="flex justify-center gap-4 mb-4">
+                    <button onClick={() => setIsSignIn(true)} className={`pb-2 px-4 font-bold transition-all ${isSignIn ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-400 hover:text-gray-600'}`}>Sign In</button>
+                    <button onClick={() => setIsSignIn(false)} className={`pb-2 px-4 font-bold transition-all ${!isSignIn ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-gray-400 hover:text-gray-600'}`}>Sign Up</button>
+                  </div>
+
+                  <div className="flex justify-center">
+                    {isSignIn ? <SignIn /> : <SignUp />}
+                  </div>
+
                   <div className='mt-6 text-center'>
                       <p className='text-xs text-slate-400'>By joining, you agree to our Terms of Service. If form is missing, check your <code className='bg-slate-100 px-1 rounded'>.env</code> for Clerk Keys.</p>
                   </div>

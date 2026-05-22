@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-import { Image, X } from 'lucide-react'
+import { Image, Video, X } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useSelector } from "react-redux";
 import { useAuth } from '@clerk/clerk-react';
@@ -24,7 +24,7 @@ const CreatePost = () => {
   }
   setLoading(true)
 
-  const postType = images.length && content ? 'text_with_image' : images.length ? 'image' : 'text'
+  const postType = images.some(file => file.type.startsWith('video/')) ? 'video' : (images.length && content ? 'text_with_image' : images.length ? 'image' : 'text')
 
   try {
     const formData = new FormData();
@@ -77,7 +77,11 @@ const CreatePost = () => {
               images.length > 0 && <div className='flex flex-wrap gap-2 mt-4'>
                 {images.map((image, i)=>(
                   <div key={i} className='relative group'>
-                    <img src={URL.createObjectURL(image)} className='h-20 rounded-md' alt="" />
+                    {image.type.startsWith('video/') ? (
+                      <video src={URL.createObjectURL(image)} className='h-20 rounded-md' controls />
+                    ) : (
+                      <img src={URL.createObjectURL(image)} className='h-20 rounded-md' alt="" />
+                    )}
                     <div onClick={()=> setImages(images.filter((_, index)=> index !== i))} className='absolute hidden group-hover:flex justify-center items-center top-0 right-0 bottom-0 left-0 bg-black/40 rounded-md cursor-pointer'>
                       <X className="w-6 h-6 text-white"/>
                     </div>
@@ -90,9 +94,10 @@ const CreatePost = () => {
               <div className='flex items-center justify-between pt-3 border-t border-gray-300'>
                 <label htmlFor="images" className='flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 transition cursor-pointer'>
                   <Image className='size-6'/>
+                  <Video className='size-6'/>
                 </label>
 
-                <input type="file" id="images" accept='image/*' hidden multiple onChange={(e)=>setImages([...images, ...e.target.files])}/>
+                <input type="file" id="images" accept='image/*,video/*' hidden multiple onChange={(e)=>setImages([...images, ...e.target.files])}/>
 
                 <button disabled={loading} onClick={()=> toast.promise(
                   handleSubmit(), 
