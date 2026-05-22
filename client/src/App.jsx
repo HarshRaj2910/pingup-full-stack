@@ -12,6 +12,7 @@ import CodeSharePage from './pages/CodeSharePage'
 import LiveCollab from './pages/LiveCollab'
 import AdminLogin from './pages/AdminLogin'
 import SuperadminDashboard from './pages/SuperadminDashboard'
+import Challenges from './pages/Challenges'
 import {useUser, useAuth} from '@clerk/clerk-react'
 import Layout from './pages/Layout'
 import toast, {Toaster} from 'react-hot-toast'
@@ -93,6 +94,7 @@ const App = () => {
           <Route path='messages/:userId' element={<ChatBox/>}/>
           <Route path='connections' element={<Connections/>}/>
           <Route path='discover' element={<Discover/>}/>
+          <Route path='challenges' element={<Challenges/>}/>
           <Route path='profile' element={<Profile/>}/>
           <Route path='profile/:profileId' element={<Profile/>}/>
           <Route path='create-post' element={<CreatePost/>}/>

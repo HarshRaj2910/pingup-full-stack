@@ -14,7 +14,9 @@ const userSchema = new mongoose.Schema({
     connections: [{type: String, ref: 'User' }],
     role: { type: String, enum: ['User', 'Admin', 'SuperAdmin', 'PendingAdmin'], default: 'User' },
     isStudent: { type: Boolean, default: false },
-    trialStartedAt: { type: Date }
+    trialStartedAt: { type: Date },
+    points: { type: Number, default: 0 },
+    completed_challenges: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Challenge' }]
 },{timestamps: true, minimize: false})
 
 const User = mongoose.model('User', userSchema)

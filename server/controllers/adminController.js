@@ -35,16 +35,20 @@ export const adminLoginRequest = async (req, res) => {
         });
 
         // Send Email
-        await sendEmail({
-            to: email,
-            subject: 'Admin Login OTP',
-            body: `<p>Your Email OTP is: <b>${emailOtp}</b></p><p>This is valid for 10 minutes.</p>`
-        });
-
-        // Mock sending Mobile OTP (since no SMS provider is installed)
-        console.log(`[MOCK SMS] Mobile OTP for ${email}: ${mobileOtp}`);
-
-        res.json({ success: true, message: 'OTPs sent to your email and mobile (check server console for mobile OTP)' });
+        try {
+            await sendEmail({
+                to: email,
+                subject: 'Admin Login OTP',
+                body: `<p>Your Email OTP is: <b>${emailOtp}</b></p><p>This is valid for 10 minutes.</p>`
+            });
+            console.log(`[MOCK SMS] Mobile OTP for ${email}: ${mobileOtp}`);
+            res.json({ success: true, message: 'OTPs sent to your email and mobile (check server console for mobile OTP)' });
+        } catch (emailError) {
+            console.error('Failed to send email:', emailError.message);
+            console.log(`[FALLBACK] Email OTP for ${email}: ${emailOtp}`);
+            console.log(`[FALLBACK] Mobile OTP for ${email}: ${mobileOtp}`);
+            res.json({ success: true, message: 'Email failed to send. Check server console for both OTPs to continue.' });
+        }
 
     } catch (error) {
         console.error(error);

@@ -11,6 +11,7 @@ import storyRouter from './routes/storyRoutes.js';
 import messageRouter from './routes/messageRoutes.js';
 import codeRouter from './routes/codeRoutes.js';
 import adminRouter from './routes/adminRoutes.js';
+import challengeRouter from './routes/challengeRoutes.js';
 
 const app = express();
 
@@ -28,6 +29,7 @@ app.use('/api/story', storyRouter)
 app.use('/api/message', messageRouter)
 app.use('/api/code', codeRouter)
 app.use('/api/admin', adminRouter)
+app.use('/api/challenge', challengeRouter)
 
 const PORT = process.env.PORT || 4000;
 
