@@ -24,7 +24,9 @@ const Messages = () => {
             <div key={user._id} className='group flex flex-col p-6 bg-white shadow-sm hover:shadow-xl rounded-2xl transition-all duration-300 border border-slate-100 hover:border-indigo-100'>
               <div className='flex items-start gap-4'>
                   <div className='relative'>
-                      <img src={user.profile_picture} alt="" className='rounded-full w-16 h-16 object-cover border-2 border-white shadow-sm group-hover:border-indigo-50 transition-colors'/>
+                      <Link to={`/profile/${user._id}`}>
+                        <img src={user.profile_picture} alt="" className='rounded-full w-16 h-16 object-cover border-2 border-white shadow-sm group-hover:border-indigo-50 transition-colors cursor-pointer'/>
+                      </Link>
                       <div className='absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full'></div>
                   </div>
                   <div className='flex-1 min-w-0'>

@@ -24,3 +24,21 @@ export const getSnippets = async (req, res) => {
         res.json({ success: false, message: error.message });
     }
 }
+
+export const deleteSnippet = async (req, res) => {
+    try {
+        const { userId } = req.auth();
+        const { id } = req.params;
+        const snippet = await CodeSnippet.findById(id);
+        
+        if (!snippet) {
+            return res.json({ success: false, message: 'Snippet not found' });
+        }
+        
+        await CodeSnippet.findByIdAndDelete(id);
+        res.json({ success: true, message: 'Snippet deleted' });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+}

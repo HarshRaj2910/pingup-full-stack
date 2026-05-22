@@ -21,6 +21,7 @@ const Profile = () => {
   const {profileId} = useParams()
   const [user, setUser] = useState(null)
   const [posts, setPosts] = useState([])
+  const [likedPosts, setLikedPosts] = useState([])
   const [activeTab, setActiveTab] = useState('posts')
   const [showEdit, setShowEdit] = useState(false)
 
@@ -34,6 +35,7 @@ const Profile = () => {
         if(data.success){
           setUser(data.profile)
           setPosts(data.posts)
+          setLikedPosts(data.likedPosts || [])
         }else{
           toast.error(data.message)
         }
@@ -71,7 +73,7 @@ const Profile = () => {
         {/* Tabs */}
         <div className='mt-6'>
           <div className='bg-white rounded-xl shadow p-1 flex max-w-2xl mx-auto overflow-x-auto'>
-            {["posts", "media", "likes", "followers", "following"].map((tab)=>(
+            {["posts", "video", "likes"].map((tab)=>(
               <button onClick={()=> setActiveTab(tab)} key={tab} className={`flex-1 min-w-[80px] px-4 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${activeTab === tab ? "bg-indigo-600 text-white" : "text-gray-600 hover:text-gray-900"}`}>
                   {tab.charAt(0).toUpperCase() + tab.slice(1)}
               </button>
@@ -84,66 +86,24 @@ const Profile = () => {
             </div>
           )}
 
-        {/* Media */}
-          {activeTab === 'media' && (
-            <div className='flex flex-wrap mt-6 max-w-6xl'>
-              {
-                posts.filter((post)=>post.image_urls.length > 0).map((post)=>(
-                  <>
-                  {post.image_urls.map((image, index)=>(
-                    <Link target='_blank' to={image} key={index} className='relative group'>
-                      <img src={image} key={index} className='w-64 aspect-video object-cover' alt="" />
-                      <p className='absolute bottom-0 right-0 text-xs p-1 px-3 backdrop-blur-xl text-white opacity-0 group-hover:opacity-100 transition duration-300'>Posted {moment(post.createdAt).fromNow()}</p>
-                    </Link>
-                  ))}
-                  </>
-                ))
-              }
+        {/* Video */}
+          {activeTab === 'video' && (
+            <div className='mt-6 flex flex-col items-center gap-6'>
+              {posts.filter((post)=>post.post_type === 'video').length > 0 ? (
+                  posts.filter((post)=>post.post_type === 'video').map((post)=> <PostCard key={post._id} post={post}/>)
+              ) : (
+                  <p className='text-gray-500 mt-10'>No videos posted yet.</p>
+              )}
             </div>
           )}
 
-          {/* Followers */}
-          {activeTab === 'followers' && (
-              <div className='mt-6 grid grid-cols-1 md:grid-cols-2 gap-4'>
-                  {user.followers?.length > 0 ? (
-                      user.followers.map(follower => (
-                          <div key={follower._id} className='bg-white p-4 rounded-xl shadow flex items-center gap-4'>
-                              <Link to={`/profile/${follower._id}`}>
-                                  <img src={follower.profile_picture} alt="" className='w-12 h-12 rounded-full object-cover'/>
-                              </Link>
-                              <div>
-                                  <Link to={`/profile/${follower._id}`} className='font-bold text-gray-900 hover:underline'>
-                                      {follower.full_name}
-                                  </Link>
-                                  <p className='text-sm text-gray-500'>@{follower.username}</p>
-                              </div>
-                          </div>
-                      ))
+          {/* Likes */}
+          {activeTab === 'likes' && (
+              <div className='mt-6 flex flex-col items-center gap-6'>
+                  {likedPosts.length > 0 ? (
+                      likedPosts.map(post => <PostCard key={post._id} post={post}/>)
                   ) : (
-                      <p className='text-gray-500 text-center col-span-full'>No followers yet.</p>
-                  )}
-              </div>
-          )}
-
-          {/* Following */}
-          {activeTab === 'following' && (
-              <div className='mt-6 grid grid-cols-1 md:grid-cols-2 gap-4'>
-                  {user.following?.length > 0 ? (
-                      user.following.map(following => (
-                          <div key={following._id} className='bg-white p-4 rounded-xl shadow flex items-center gap-4'>
-                              <Link to={`/profile/${following._id}`}>
-                                  <img src={following.profile_picture} alt="" className='w-12 h-12 rounded-full object-cover'/>
-                              </Link>
-                              <div>
-                                  <Link to={`/profile/${following._id}`} className='font-bold text-gray-900 hover:underline'>
-                                      {following.full_name}
-                                  </Link>
-                                  <p className='text-sm text-gray-500'>@{following.username}</p>
-                              </div>
-                          </div>
-                      ))
-                  ) : (
-                      <p className='text-gray-500 text-center col-span-full'>Not following anyone yet.</p>
+                      <p className='text-gray-500 mt-10'>No liked posts yet.</p>
                   )}
               </div>
           )}

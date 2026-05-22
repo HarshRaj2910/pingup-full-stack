@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@clerk/clerk-react';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
-import { Code2, Send } from 'lucide-react';
+import { Code2, Send, Trash2 } from 'lucide-react';
 import moment from 'moment';
+import { useSelector } from 'react-redux';
 
 const CodeSharePage = () => {
     const { getToken } = useAuth();
@@ -12,6 +13,7 @@ const CodeSharePage = () => {
     const [code, setCode] = useState('');
     const [language, setLanguage] = useState('javascript');
     const [loading, setLoading] = useState(false);
+    const currentUser = useSelector((state) => state.user.value);
 
     useEffect(() => {
         const fetchSnippets = async () => {
@@ -45,6 +47,22 @@ const CodeSharePage = () => {
             toast.error(e.message);
         }
         setLoading(false);
+    };
+
+    const handleDelete = async (id) => {
+        if(!window.confirm("Are you sure you want to delete this snippet?")) return;
+        try {
+            const token = await getToken();
+            const { data } = await api.delete(`/api/code/delete/${id}`, { headers: { Authorization: `Bearer ${token}` }});
+            if(data.success) {
+                setSnippets(snippets.filter(s => s._id !== id));
+                toast.success("Snippet deleted!");
+            } else {
+                toast.error(data.message);
+            }
+        } catch(e) {
+            toast.error(e.message);
+        }
     };
 
     return (
@@ -95,6 +113,11 @@ const CodeSharePage = () => {
                                 }} className='text-xs text-indigo-600 hover:text-indigo-800 font-semibold transition cursor-pointer'>
                                     Copy to Editor
                                 </button>
+                                {currentUser && (
+                                    <button onClick={() => handleDelete(snippet._id)} className='text-red-500 hover:text-red-700 transition p-1 cursor-pointer' title="Delete Snippet">
+                                        <Trash2 className='w-4 h-4'/>
+                                    </button>
+                                )}
                             </div>
                         </div>
                         <div className='p-4 bg-slate-900 overflow-x-auto'>

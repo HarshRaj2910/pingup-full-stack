@@ -58,7 +58,8 @@ export const getStories = async (req, res) =>{
         const userIds = [userId, ...user.connections, ...user.following]
 
         const stories = await Story.find({
-            user: {$in: userIds}
+            user: {$in: userIds},
+            createdAt: { $gt: new Date(Date.now() - 24 * 60 * 60 * 1000) }
         }).populate('user').populate('views_count').sort({ createdAt: -1 });
 
         res.json({ success: true, stories }); 
@@ -101,6 +102,37 @@ export const viewStory = async (req, res) => {
             await story.save();
         }
         res.json({ success: true });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+}
+
+export const commentOnStory = async (req, res) => {
+    try {
+        const { userId } = req.auth();
+        const { storyId, text } = req.body;
+
+        const story = await Story.findById(storyId);
+        if (!story) {
+            return res.json({ success: false, message: 'Story not found' });
+        }
+
+        const newComment = {
+            user: userId,
+            text,
+            createdAt: new Date()
+        };
+
+        story.comments.push(newComment);
+        await story.save();
+
+        const populatedStory = await Story.findById(storyId)
+            .populate('user')
+            .populate('views_count')
+            .populate('comments.user');
+
+        res.json({ success: true, message: 'Comment added', story: populatedStory });
     } catch (error) {
         console.log(error);
         res.json({ success: false, message: error.message });

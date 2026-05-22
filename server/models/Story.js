@@ -7,6 +7,11 @@ const storySchema = new mongoose.Schema({
     media_type: {type: String, enum: ['text', 'image', 'video']},
     views_count: [{type: String, ref: 'User'}],
     background_color: { type: String  },
+    comments: [{
+        user: {type: String, ref: 'User'},
+        text: String,
+        createdAt: {type: Date, default: Date.now}
+    }],
 }, {timestamps: true, minimize: false})
 
 const Story = mongoose.model('Story', storySchema)

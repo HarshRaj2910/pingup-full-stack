@@ -54,7 +54,7 @@ const ChatBox = () => {
       const token = await getToken()
       const formData = new FormData();
       formData.append('to_user_id', userId)
-      formData.append('text', `Let's code together! 🚀 [Join Live Collab]`);
+      formData.append('text', `Let's code together! [Join Live Collab]`);
 
       const { data } = await api.post('/api/message/send', formData, {
         headers: { Authorization: `Bearer ${token}` }
@@ -102,7 +102,9 @@ const ChatBox = () => {
     <div className={`flex flex-col h-screen transition-colors duration-300 ${isDarkMode ? 'bg-slate-900' : 'bg-slate-50'}`}>
       <div className={`flex items-center justify-between p-2 md:px-10 xl:pl-42 border-b transition-colors duration-300 ${isDarkMode ? 'bg-slate-800 border-slate-700' : 'bg-gradient-to-r from-indigo-50 to-purple-50 border-gray-300'}`}>
         <div className='flex items-center gap-2'>
-            <img src={user.profile_picture} alt="" className="size-8 rounded-full"/>
+            <Link to={`/profile/${user._id}`}>
+              <img src={user.profile_picture} alt="" className="size-8 rounded-full hover:opacity-80 transition-opacity"/>
+            </Link>
             <div>
             <p className={`font-medium ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{user.full_name}</p>
             <p className="text-sm text-gray-500 -mt-1.5">@{user.username}</p>
@@ -130,7 +132,7 @@ const ChatBox = () => {
                       message.text.includes('[Join Live Collab]') ? 
                       <div className='leading-relaxed'>
                           Let's code together! 🚀 
-                          <Link to={`/live-collab/${message.from_user_id === user._id ? message.to_user_id : message.from_user_id}`} className={`block mt-2 text-center p-2 rounded-lg font-semibold border ${message.to_user_id === user._id ? 'bg-white text-indigo-600 border-white hover:bg-indigo-50' : 'bg-indigo-600 text-white border-indigo-600 hover:bg-indigo-700'}`}>
+                          <Link to={`/live-collab/${user._id}`} className={`block mt-2 text-center p-2 rounded-lg font-semibold border ${message.to_user_id === user._id ? 'bg-white text-indigo-600 border-white hover:bg-indigo-50' : 'bg-indigo-600 text-white border-indigo-600 hover:bg-indigo-700'}`}>
                              Open Collab Space
                           </Link>
                       </div>
