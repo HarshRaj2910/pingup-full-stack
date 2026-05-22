@@ -1,15 +1,26 @@
 export const protect = async (req, res, next) => {
     try {
-        console.log('Protect middleware - headers:', req.headers.authorization || req.headers);
-        const authResult = await req.auth();
-        console.log('Protect middleware - req.auth() result:', authResult);
-        const {userId} = authResult || {};
-        if(!userId){
-            console.log('Protect middleware - not authenticated');
-            return res.json({success: false, message: "not authenticated"  })
+
+        const { userId } = await req.auth();
+
+        if (!userId) {
+            return res.status(401).json({
+                success: false,
+                message: "Not authenticated"
+            });
         }
-        next()
+
+        req.userId = userId;
+
+        next();
+
     } catch (error) {
-        res.json({success: false, message: error.message  })
+
+        console.log("Protect middleware error:", error.message);
+
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
     }
-}
+};
