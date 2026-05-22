@@ -10,6 +10,8 @@ import Profile from './pages/Profile'
 import CreatePost from './pages/CreatePost'
 import CodeSharePage from './pages/CodeSharePage'
 import LiveCollab from './pages/LiveCollab'
+import AdminLogin from './pages/AdminLogin'
+import SuperadminDashboard from './pages/SuperadminDashboard'
 import {useUser, useAuth} from '@clerk/clerk-react'
 import Layout from './pages/Layout'
 import toast, {Toaster} from 'react-hot-toast'
@@ -83,6 +85,8 @@ const App = () => {
     <>
       <Toaster />
       <Routes>
+        <Route path='/admin' element={<AdminLogin/>}/>
+        <Route path='/superadmin/dashboard' element={<SuperadminDashboard/>}/>
         <Route path='/' element={ !user ? <Login /> : <Layout/>}>
           <Route index element={<Feed/>}/>
           <Route path='messages' element={<Messages/>}/>

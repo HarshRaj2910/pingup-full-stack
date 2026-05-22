@@ -10,6 +10,7 @@ import postRouter from './routes/postRoutes.js';
 import storyRouter from './routes/storyRoutes.js';
 import messageRouter from './routes/messageRoutes.js';
 import codeRouter from './routes/codeRoutes.js';
+import adminRouter from './routes/adminRoutes.js';
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use('/api/post', postRouter)
 app.use('/api/story', storyRouter)
 app.use('/api/message', messageRouter)
 app.use('/api/code', codeRouter)
+app.use('/api/admin', adminRouter)
 
 const PORT = process.env.PORT || 4000;
 

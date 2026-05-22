@@ -29,3 +29,22 @@ export const verifySuperAdmin = async (req, res, next) => {
         res.json({ success: false, message: error.message });
     }
 }
+
+import jwt from 'jsonwebtoken';
+
+export const customAdminProtect = async (req, res, next) => {
+    let token;
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+        try {
+            token = req.headers.authorization.split(' ')[1];
+            const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret-key-123');
+            req.admin = decoded; // { email, role }
+            next();
+        } catch (error) {
+            return res.json({ success: false, message: 'Not authorized, token failed' });
+        }
+    }
+    if (!token) {
+        return res.json({ success: false, message: 'Not authorized, no token' });
+    }
+};

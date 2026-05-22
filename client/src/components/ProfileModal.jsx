@@ -19,6 +19,7 @@ const ProfileModal = ({setShowEdit}) => {
         profile_picture: null,
         cover_photo: null,
         full_name: user?.full_name || '',
+        isStudent: user?.isStudent || false,
     })
 
     // keep form in sync when user loads
@@ -31,6 +32,7 @@ const ProfileModal = ({setShowEdit}) => {
                 profile_picture: null,
                 cover_photo: null,
                 full_name: user.full_name || '',
+                isStudent: user.isStudent || false,
             })
         }
     },[user])
@@ -40,12 +42,13 @@ const ProfileModal = ({setShowEdit}) => {
         try {
 
             const userData = new FormData();
-            const {full_name, username, bio, location, profile_picture, cover_photo} = editForm
+            const {full_name, username, bio, location, profile_picture, cover_photo, isStudent} = editForm
 
             userData.append('username', username);
             userData.append('bio', bio);
             userData.append('location', location);
             userData.append('full_name', full_name);
+            userData.append('isStudent', isStudent);
             profile_picture && userData.append('profile', profile_picture)
             cover_photo && userData.append('cover', cover_photo)
 
@@ -122,6 +125,13 @@ const ProfileModal = ({setShowEdit}) => {
                     Location
                 </label>
                <input type="text" className='w-full p-3 border border-gray-200 rounded-lg' placeholder='Please enter your location' onChange={(e)=>setEditForm({...editForm, location: e.target.value})} value={editForm.location}/>
+            </div>
+
+            <div className='flex items-center gap-2 mt-4'>
+                <input type="checkbox" id="isStudent" className='w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500' checked={editForm.isStudent} onChange={(e) => setEditForm({...editForm, isStudent: e.target.checked})} />
+                <label htmlFor="isStudent" className="text-sm font-medium text-gray-700">
+                    I am a Student (Get 7 days free trial for Live Collab)
+                </label>
             </div>
 
             <div className='flex justify-end space-x-3 pt-6'>

@@ -178,6 +178,9 @@ const Login = () => {
       {/* Footer */}
       <footer className='py-10 bg-slate-950 text-center text-slate-500 text-sm border-t border-slate-800'>
           <p>© 2026 PingUp. Built for Developers.</p>
+          <div className="mt-4">
+            <a href="/admin" className="text-indigo-400 hover:text-indigo-300 transition-colors underline">Admin Portal</a>
+          </div>
       </footer>
     </div>
   )
