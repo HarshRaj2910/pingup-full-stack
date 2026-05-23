@@ -6,7 +6,7 @@ import User from "../models/User.js";
 // Add Post
 export const addPost = async (req, res) => {
     try {
-        const { userId } = req.auth();
+        const { userId } = req.auth;
         const { content, post_type } = req.body;
         const images = req.files
 
@@ -51,7 +51,7 @@ export const addPost = async (req, res) => {
 // Get Posts
 export const getFeedPosts = async (req, res) =>{
     try {
-        const { userId } = req.auth()
+        const { userId } = req.auth
         const user = await User.findById(userId)
 
         if (!user) {
@@ -83,7 +83,7 @@ export const getDiscoverPosts = async (req, res) =>{
 // Like Post
 export const likePost = async (req, res) =>{
     try {
-        const { userId } = req.auth()
+        const { userId } = req.auth
         const { postId } = req.body;
 
         const post = await Post.findById(postId)
@@ -106,7 +106,7 @@ export const likePost = async (req, res) =>{
 // Delete Post
 export const deletePost = async (req, res) => {
     try {
-        const { userId } = req.auth();
+        const { userId } = req.auth;
         const { postId } = req.body;
         
         const post = await Post.findById(postId);
@@ -125,7 +125,7 @@ export const deletePost = async (req, res) => {
 // Add Comment
 export const addComment = async (req, res) => {
     try {
-        const { userId } = req.auth();
+        const { userId } = req.auth;
         const { postId, text } = req.body;
         
         const post = await Post.findById(postId);

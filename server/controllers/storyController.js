@@ -7,7 +7,7 @@ import { inngest } from "../inngest/index.js";
 // Add User Story
 export const addUserStory = async (req, res) =>{
     try {
-        const { userId } = req.auth();
+        const { userId } = req.auth;
         const {content, media_type, background_color} = req.body;
         const media = req.file
         let media_url = ''
@@ -47,7 +47,7 @@ export const addUserStory = async (req, res) =>{
 // Get User Stories
 export const getStories = async (req, res) =>{
     try {
-        const { userId } = req.auth();
+        const { userId } = req.auth;
         const user = await User.findById(userId)
 
         if (!user) {
@@ -72,7 +72,7 @@ export const getStories = async (req, res) =>{
 // Delete User Story
 export const deleteStory = async (req, res) =>{
     try {
-        const { userId } = req.auth();
+        const { userId } = req.auth;
         const { storyId } = req.body;
         
         const story = await Story.findById(storyId);
@@ -91,7 +91,7 @@ export const deleteStory = async (req, res) =>{
 // View Story
 export const viewStory = async (req, res) => {
     try {
-        const { userId } = req.auth();
+        const { userId } = req.auth;
         const { storyId } = req.body;
         
         const story = await Story.findById(storyId);
@@ -110,7 +110,7 @@ export const viewStory = async (req, res) => {
 
 export const commentOnStory = async (req, res) => {
     try {
-        const { userId } = req.auth();
+        const { userId } = req.auth;
         const { storyId, text } = req.body;
 
         const story = await Story.findById(storyId);

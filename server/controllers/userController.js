@@ -10,7 +10,7 @@ import { clerkClient } from "@clerk/express";
 // Get User Data using userId
 export const getUserData = async (req, res) => {
     try {
-        const { userId } = req.auth()
+        const { userId } = req.auth
         let user = await User.findById(userId)
         if(!user){
             try {
@@ -44,7 +44,7 @@ export const getUserData = async (req, res) => {
 //  Update User Data
 export const updateUserData = async (req, res) => {
     try {
-        const { userId } = req.auth()
+        const { userId } = req.auth
         let {username, bio, location, full_name, isStudent } = req.body;
 
         const tempUser = await User.findById(userId)
@@ -128,7 +128,7 @@ export const updateUserData = async (req, res) => {
 // Find Users using username, email, location, name
 export const discoverUsers = async (req, res) => {
     try {
-        const { userId } = req.auth()
+        const { userId } = req.auth
         const { input } = req.body;
 
         const allUsers = await User.find(
@@ -154,7 +154,7 @@ export const discoverUsers = async (req, res) => {
 // Follow User
 export const followUser = async (req, res) => {
     try {
-        const { userId } = req.auth()
+        const { userId } = req.auth
         const { id } = req.body;
 
         const user = await User.findById(userId)
@@ -181,7 +181,7 @@ export const followUser = async (req, res) => {
 // Unfollow User
 export const unfollowUser = async (req, res) => {
     try {
-        const { userId } = req.auth()
+        const { userId } = req.auth
         const { id } = req.body;
 
         const user = await User.findById(userId)
@@ -203,7 +203,7 @@ export const unfollowUser = async (req, res) => {
 // Send Connection Request
 export const sendConnectionRequest = async (req, res) => {
     try {
-        const {userId} = req.auth()
+        const {userId} = req.auth
         const { id } = req.body;
 
         // Check if user has sent more than 20 connection requests in the last 24 hours
@@ -248,7 +248,7 @@ export const sendConnectionRequest = async (req, res) => {
 // Get User Connections
 export const getUserConnections = async (req, res) => {
     try {
-        const {userId} = req.auth()
+        const {userId} = req.auth
         const user = await User.findById(userId).populate('connections followers following')
 
         if(!user){
@@ -272,7 +272,7 @@ export const getUserConnections = async (req, res) => {
 // Accept Connection Request
 export const acceptConnectionRequest = async (req, res) => {
     try {
-        const {userId} = req.auth()
+        const {userId} = req.auth
         const { id } = req.body;
 
         const connection = await Connection.findOne({from_user_id: id, to_user_id: userId})

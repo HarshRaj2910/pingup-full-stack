@@ -33,7 +33,7 @@ export const sseController = (req, res)=>{
 // Send Message
 export const sendMessage = async (req, res) => {
     try {
-        const { userId } = req.auth();
+        const { userId } = req.auth;
         const { to_user_id, text } = req.body;
         const file = req.file;
 
@@ -84,7 +84,7 @@ export const sendMessage = async (req, res) => {
 // Get Chat Messages
 export const getChatMessages = async (req, res) => {
     try {
-        const { userId } = req.auth();
+        const { userId } = req.auth;
         const { to_user_id } = req.body;
 
         const messages = await Message.find({
@@ -104,7 +104,7 @@ export const getChatMessages = async (req, res) => {
 
 export const getUserRecentMessages = async (req, res) => {
     try {
-        const { userId } = req.auth();
+        const { userId } = req.auth;
         const messages = await Message.find({to_user_id: userId}).populate('from_user_id to_user_id').sort({ createdAt: -1 });
 
         res.json({ success: true, messages });
@@ -116,7 +116,7 @@ export const getUserRecentMessages = async (req, res) => {
 // Sync Code
 export const syncCode = async (req, res) => {
     try {
-        const { userId } = req.auth();
+        const { userId } = req.auth;
         const { to_user_id, code, language, blocks, type } = req.body;
 
         if(connections[to_user_id]){

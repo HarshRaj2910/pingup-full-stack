@@ -2,7 +2,7 @@ import CodeSnippet from "../models/CodeSnippet.js";
 
 export const addSnippet = async (req, res) => {
     try {
-        const { userId } = req.auth();
+        const { userId } = req.auth;
         const { title, code, language } = req.body;
         
         const snippet = await CodeSnippet.create({ user: userId, title, code, language });
@@ -27,7 +27,7 @@ export const getSnippets = async (req, res) => {
 
 export const deleteSnippet = async (req, res) => {
     try {
-        const { userId } = req.auth();
+        const { userId } = req.auth;
         const { id } = req.params;
         const snippet = await CodeSnippet.findById(id);
         

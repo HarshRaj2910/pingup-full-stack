@@ -13,7 +13,7 @@ export const getDailyChallenges = async (req, res) => {
 
 export const submitChallenge = async (req, res) => {
     try {
-        const { userId } = req.auth();
+        const { userId } = req.auth;
         const { challengeId, code, language } = req.body;
 
         const challenge = await Challenge.findById(challengeId);

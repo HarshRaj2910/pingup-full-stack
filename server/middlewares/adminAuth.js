@@ -2,7 +2,7 @@ import User from '../models/User.js';
 
 export const verifyAdmin = async (req, res, next) => {
     try {
-        const { userId } = req.auth();
+        const { userId } = req.auth;
         const user = await User.findById(userId);
         
         if (!user || (user.role !== 'Admin' && user.role !== 'SuperAdmin')) {
@@ -17,7 +17,7 @@ export const verifyAdmin = async (req, res, next) => {
 
 export const verifySuperAdmin = async (req, res, next) => {
     try {
-        const { userId } = req.auth();
+        const { userId } = req.auth;
         const user = await User.findById(userId);
         
         if (!user || user.role !== 'SuperAdmin') {
@@ -39,7 +39,7 @@ export const customAdminProtect = async (req, res, next) => {
             token = req.headers.authorization.split(' ')[1];
             const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret-key-123');
             req.admin = decoded; // { email, role }
-            next();
+            return next();
         } catch (error) {
             return res.json({ success: false, message: 'Not authorized, token failed' });
         }
